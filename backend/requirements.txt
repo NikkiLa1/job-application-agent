@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+google-generativeai
+pymupdf
+httpx
+langfuse
+supabase
+python-dotenv
+nltk
