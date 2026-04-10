@@ -1,6 +1,10 @@
 import asyncio
+import logging
 import time
 import traceback
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from agent.steps.analyze_fit import analyze_fit
 from agent.steps.interview_prep import interview_prep
@@ -24,6 +28,7 @@ STEPS = [
 
 
 async def run_pipeline(run_id: str, resume_bytes: bytes, job_url: str) -> None:
+    logger.info(f"[{run_id}] Pipeline starting")
     trace = create_trace(run_id, job_url)
 
     context: dict = {
@@ -59,14 +64,17 @@ async def run_pipeline(run_id: str, resume_bytes: bytes, job_url: str) -> None:
             span = trace.span(name=step_name, input={"step": step_name})
             start = time.time()
 
+            logger.info(f"[{run_id}] Starting step: {step_name}")
             try:
                 await asyncio.to_thread(step_fn, context)
                 latency_ms = int((time.time() - start) * 1000)
                 step_latencies[step_name] = {"status": "complete", "latency_ms": latency_ms}
                 span.end(output={"status": "complete", "latency_ms": latency_ms})
+                logger.info(f"[{run_id}] Completed step: {step_name} in {latency_ms}ms")
             except Exception as step_err:
                 latency_ms = int((time.time() - start) * 1000)
                 step_latencies[step_name] = {"status": "error", "latency_ms": latency_ms}
+                logger.error(f"[{run_id}] Error in step {step_name}: {step_err}")
                 span.end(
                     output={"status": "error", "error": str(step_err)},
                     level="ERROR",
