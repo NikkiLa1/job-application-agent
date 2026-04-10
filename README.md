@@ -1,8 +1,18 @@
 # Job Application Agent
 
-An agentic AI web app that turbocharges your job applications. Upload your resume and paste a job URL — the pipeline researches the company, scores your fit, tailors your resume, writes a cover letter, and generates 10 interview questions with answer frameworks.
+An agentic AI web app that turbocharges your job applications. Upload your resume and paste a job posting URL — the pipeline researches the company, scores your fit, tailors your resume, writes a cover letter, and generates 10 interview questions with answer frameworks.
 
 DS 5730 Final Project
+
+---
+
+## Live Demo
+
+[job-application-agent-m25e7mutf-nikki2.vercel.app](https://job-application-agent-m25e7mutf-nikki2.vercel.app)
+
+## Langfuse Dashboard
+
+[View Observability Dashboard](https://us.cloud.langfuse.com/project/cmnt8g7or007oad07h7qeilyr/dashboards)
 
 ---
 
@@ -20,12 +30,12 @@ DS 5730 Final Project
 │                                                         │
 │  ┌─────────────────── Agent Pipeline ──────────────┐    │
 │  │  1. parse_resume     (PyMuPDF)                  │    │
-│  │  2. scrape_job       (Gemini + Google Search)   │    │
-│  │  3. research_company (Gemini + Google Search)   │    │
-│  │  4. analyze_fit      (Gemini + NLTK scoring)    │    │
-│  │  5. tailor_resume    (Gemini)                   │    │
-│  │  6. write_cover_letter (Gemini)                 │    │
-│  │  7. interview_prep   (Gemini)                   │    │
+│  │  2. scrape_job       (GPT-4o-mini + web search) │    │
+│  │  3. research_company (GPT-4o-mini + web search) │    │
+│  │  4. analyze_fit      (GPT-4o-mini + NLTK)       │    │
+│  │  5. tailor_resume    (GPT-4o-mini)              │    │
+│  │  6. write_cover_letter (GPT-4o-mini)            │    │
+│  │  7. interview_prep   (GPT-4o-mini)              │    │
 │  └─────────────────────────────────────────────────┘    │
 │                    │                   │                 │
 │             Langfuse               Supabase              │
@@ -74,7 +84,7 @@ create table job_runs (
 - Python 3.11+
 - Node.js 18+
 - Supabase project (create table above)
-- Gemini API key
+- OpenAI API key
 - Langfuse account
 
 ### Backend
@@ -106,16 +116,16 @@ Open http://localhost:5173
 ### Backend → Railway
 
 1. Create a new Railway project and connect this repo
-2. Set the **root directory** to `backend/`
-3. Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-4. Add all environment variables from `.env.example` in Railway's Variables tab
+2. Set the **Root Directory** to `backend`
+3. Set the **Start Command** to `uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. Add all environment variables from `.env.example` in the Variables tab
 5. Deploy — Railway auto-detects Python and installs `requirements.txt`
 
 ### Frontend → Vercel
 
 1. Import this repo into Vercel
-2. Set **Framework Preset** to `Vite` and **Root Directory** to `frontend/`
-3. Add environment variable: `VITE_API_URL=https://your-railway-backend.railway.app`
+2. Set **Framework Preset** to `Vite` and **Root Directory** to `frontend`
+3. Add environment variable: `VITE_API_URL=https://your-railway-backend.up.railway.app`
 4. Deploy
 
 ---
@@ -126,7 +136,7 @@ Open http://localhost:5173
 
 | Variable | Description |
 |----------|-------------|
-| `GEMINI_API_KEY` | Google Gemini API key |
+| `OPENAI_API_KEY` | OpenAI API key |
 | `LANGFUSE_PUBLIC_KEY` | Langfuse project public key |
 | `LANGFUSE_SECRET_KEY` | Langfuse project secret key |
 | `LANGFUSE_HOST` | Langfuse host (e.g. `https://us.cloud.langfuse.com`) |
@@ -145,17 +155,7 @@ Open http://localhost:5173
 
 - **Frontend**: React 18, Vite, Tailwind CSS, react-markdown
 - **Backend**: Python 3.11, FastAPI, Uvicorn
-- **LLM**: Google Gemini 2.0 Flash (with Google Search grounding)
+- **LLM**: OpenAI GPT-4o-mini (with web search for research steps)
 - **Observability**: Langfuse (trace + spans per step)
 - **Database**: Supabase (PostgreSQL)
 - **Deployment**: Vercel (frontend) + Railway (backend)
-
----
-
-## Live Demo
-
-<!-- TODO: Add live demo URL -->
-
-## Langfuse Dashboard
-
-<!-- TODO: Add Langfuse dashboard link -->
