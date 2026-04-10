@@ -1,22 +1,12 @@
 import os
 
-import google.generativeai as genai
+from openai import OpenAI
 
-try:
-    from google.generativeai.types import GoogleSearchRetrieval, Tool
-
-    _search_tool = Tool(google_search_retrieval=GoogleSearchRetrieval())
-except Exception:
-    _search_tool = {"google_search_retrieval": {}}  # type: ignore
-
-_model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
-    tools=[_search_tool],
-)
+_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 
 
 def research_company(context: dict) -> None:
-    """Use Gemini with Google Search grounding to research the company."""
+    """Use OpenAI with web search to research the company."""
     job_info = context["job_info"]
     company_name = job_info.get("company_name", "the company")
     job_title = job_info.get("job_title", "this role")
@@ -35,5 +25,9 @@ Find and summarize:
 
 This research will be used to personalize a job application and cover letter."""
 
-    response = _model.generate_content(prompt)
-    context["company_research"] = response.text
+    response = _client.responses.create(
+        model="gpt-4o-mini",
+        tools=[{"type": "web_search_preview"}],
+        input=prompt,
+    )
+    context["company_research"] = response.output_text

@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
 python-multipart
-google-generativeai
+openai
 pymupdf
 httpx
 langfuse>=2.0.0,<3.0.0

@@ -1,8 +1,8 @@
 import os
 
-import google.generativeai as genai
+from openai import OpenAI
 
-_model = genai.GenerativeModel("gemini-2.0-flash")
+_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 
 
 def write_cover_letter(context: dict) -> None:
@@ -12,7 +12,12 @@ def write_cover_letter(context: dict) -> None:
     tailored_resume = context["tailored_resume"]
     fit_analysis = context["fit_analysis"]
 
-    prompt = f"""Write a compelling, highly personalized cover letter for this job application.
+    response = _client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": f"""Write a compelling, highly personalized cover letter for this job application.
 
 JOB INFORMATION:
 {job_info['raw_text']}
@@ -35,7 +40,8 @@ Requirements:
 6. Close with a confident, specific call to action
 7. Format as clean markdown
 
-Avoid clichés like "I am writing to express my interest", "I am a hard worker", or "I believe I would be a great fit"."""
-
-    response = _model.generate_content(prompt)
-    context["cover_letter"] = response.text
+Avoid clichés like "I am writing to express my interest" or "I am a hard worker".""",
+            }
+        ],
+    )
+    context["cover_letter"] = response.choices[0].message.content

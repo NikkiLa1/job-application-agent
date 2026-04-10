@@ -1,8 +1,8 @@
 import os
 
-import google.generativeai as genai
+from openai import OpenAI
 
-_model = genai.GenerativeModel("gemini-2.0-flash")
+_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
 
 
 def interview_prep(context: dict) -> None:
@@ -12,7 +12,12 @@ def interview_prep(context: dict) -> None:
     resume_text = context["resume_text"]
     fit_analysis = context["fit_analysis"]
 
-    prompt = f"""Generate comprehensive interview preparation material for this job application.
+    response = _client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user",
+                "content": f"""Generate comprehensive interview preparation material for this job application.
 
 JOB REQUIREMENTS:
 {job_info['raw_text']}
@@ -41,7 +46,8 @@ Include a balanced mix of:
 - Company & culture fit questions (1-2)
 - Role-specific scenario questions (1-2)
 
-Format as clean, numbered markdown."""
-
-    response = _model.generate_content(prompt)
-    context["interview_prep"] = response.text
+Format as clean, numbered markdown.""",
+            }
+        ],
+    )
+    context["interview_prep"] = response.choices[0].message.content
