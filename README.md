@@ -1,6 +1,6 @@
 # Job Application Agent
 
-An agentic AI web app that turbocharges your job applications. Upload your resume and paste a job posting URL — the pipeline researches the company, scores your fit, tailors your resume, writes a cover letter, and generates 10 interview questions with answer frameworks.
+An agentic AI web app that turbocharges your job applications. Upload your resume and paste a job posting URL - the pipeline researches the company, scores your fit, tailors your resume, writes a cover letter, and generates 10 interview questions with answer frameworks.
 
 DS 5730 Final Project
 
